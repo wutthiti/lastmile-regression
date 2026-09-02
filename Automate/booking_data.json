@@ -1,0 +1,136 @@
+{
+  "external_delivery_no": "889990807OD008",
+  "order_type": "DROPOFF",
+  "order_date": "2026-07-07T23:00:00Z",
+  "delivery_type": "ON DEMAND",
+  "comit_delivery_times": "T04:00:00Z",
+  "external_inv_no": "88999103229",
+  "total_amount": 370.09,
+  "chanel": {
+    "chanel_code": "OD",
+    "chanel_name": "Big C Online Channel"
+  },
+  "expected_delivery_date_from": "2026-07-08",
+  "expect_delivery_times_from": "T03:00:00Z",
+  "expect_delivery_times_to": "T04:00:00Z",
+  "source": {
+    "source_store_code": "88999",
+    "source_store_name": "BigC-QA",
+    "source_address": {
+      "first_name": "Kusuma Ratanapanta",
+      "phone": "0800607066",
+      "street1": "เลขที่ 1293 หมู่ 4",
+      "postal_code": "10270",
+      "district": "เมืองสมุทรปราการ",
+      "subdistrict": "เทพารักษ์",
+      "province": "สมุทรปราการ",
+      "country": "Thailand",
+      "country_code": "TH",
+      "latlong": "13.638750,100.593694"
+    }
+  },
+  "destination": {
+    "destination_type": "HOME",
+    "customer_code": "1483738",
+    "address_code": "BC20001002",
+    "destination_address": {
+      "first_name": "RandomCustomer_96",
+      "last_name": "Random1229672",
+      "phone": "0942249244",
+      "street1": "Random Street Address 78",
+      "postal_code": "10130",
+      "district": "อำเภอพระประแดง",
+      "subdistrict": "ตำบล สำโรงกลาง",
+      "province": "สมุทรปราการ",
+      "country": "Thailand",
+      "country_code": "TH",
+      "latlong": "13.614741,100.601085"
+    }
+  },
+  "is_cod": 1,
+  "cod_amount": 370.09,
+  "cod_currency": "THB",
+  "cod_payment_method": "CASH",
+  "cod_remark": "หมายเหตุของ COD",
+  "note": "ข้อความนี้ให้ไรเดอร์อ่าน",
+  "items": [
+    {
+      "item_no": 1,
+      "product_sku": "9556019302846",
+      "ean": "9556019302846",
+      "product_name": "เซ็นโซดายน์ แปรงสีฟันดีพ คลีน แพ็ค 2+1",
+      "quantity": 1,
+      "uom": "EA",
+      "volume_cbm": 0,
+      "weight_kg": 0.8,
+      "amount": 148.036,
+      "currency": "THB"
+    },
+    {
+      "item_no": 2,
+      "product_sku": "2000005254420",
+      "ean": "2000005254420",
+      "product_name": "เดลี่ยูส แปรงขัดสุขภัณฑ์ สีเทา-ขาว",
+      "quantity": 1,
+      "uom": "EA",
+      "volume_cbm": 0,
+      "weight_kg": 0.6,
+      "amount": 111.02699999999999,
+      "currency": "THB"
+    },
+    {
+      "item_no": 3,
+      "product_sku": "8850002001213",
+      "ean": "8850002001213",
+      "product_name": "เปา ซอฟท์ ผงซักฟอก สูตรนาโนเทค 900 กรัม",
+      "quantity": 1,
+      "uom": "EA",
+      "volume_cbm": 0,
+      "weight_kg": 0.4,
+      "amount": 74.018,
+      "currency": "THB"
+    },
+    {
+      "item_no": 4,
+      "product_sku": "4710731012314",
+      "ean": "4710731012314",
+      "product_name": "ฟาร์เซ็นต์ เจลหอมปรับอากาศ รูปไข่กลิ่นพีช ขนาด 170 ก.",
+      "quantity": 1,
+      "uom": "EA",
+      "volume_cbm": 0.1,
+      "weight_kg": 0.16,
+      "amount": 29.6072,
+      "currency": "THB"
+    },
+    {
+      "item_no": 5,
+      "product_sku": "8851993338012",
+      "ean": "8851993338012",
+      "product_name": "ช้าง น้ำดื่ม 600 มล.",
+      "quantity": 1,
+      "uom": "EA",
+      "volume_cbm": 0,
+      "weight_kg": 0.04,
+      "amount": 7.4018,
+      "currency": "THB"
+    }
+  ],
+  "original_destination": {
+    "destination_type": "HOME",
+    "customer_code": "1483738",
+    "address_code": "BC20001002",
+    "destination_address": {
+      "first_name": "RandomCustomer_96",
+      "last_name": "Random1229672",
+      "phone": "0942249244",
+      "street1": "Random Street Address 78",
+      "postal_code": "10130",
+      "district": "อำเภอพระประแดง",
+      "subdistrict": "ตำบล สำโรงกลาง",
+      "province": "สมุทรปราการ",
+      "country": "Thailand",
+      "country_code": "TH",
+      "latlong": "13.614741,100.601085"
+    }
+  }
+}

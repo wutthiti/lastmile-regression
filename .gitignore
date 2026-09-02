@@ -1,0 +1,16 @@
+# Environment / secrets
+Automate/.env
+
+# Python
+Automate/__pycache__/
+*.pyc
+
+# Robot Framework generated reports/artifacts
+Automate/log.html
+Automate/output.xml
+Automate/report.html
+Automate/selenium-screenshot-*.png
+results/
+
+# Office lock files
+importfile/~$*.xlsx
