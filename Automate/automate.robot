@@ -16,6 +16,14 @@ ${AUTOMATION_NAME}    UIAutomator2
 ${APP_PACKAGE}        com.bigc.driver.uat
 ${APP_ACTIVITY}       com.bigcdev.driverapp.MainActivity    # หมายเหตุ: หากรันแล้วแอปไม่เปิด อาจจะต้องแก้ชื่อ Activity ให้ตรงกับของแอปจริงนะครับ
 
+# External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_058 (สถานะต้องเป็น Pending อยู่ก่อนแล้ว - cancel ควรสำเร็จ)
+# แก้ไขค่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO_PENDING:xxxxxxxxxx
+${EXTERNAL_ORDER_NO_PENDING}    889992406STD002
+
+# External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_059 (สถานะต้องเป็น Planned อยู่ก่อนแล้ว - cancel ควรสำเร็จ)
+# แก้ไขค่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO_PLANNED:xxxxxxxxxx
+${EXTERNAL_ORDER_NO_PLANNED}    889992508OD092
+
 # External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_060 (สถานะต้องเป็น IN_LOAD อยู่ก่อนแล้ว)
 # แก้ไขค่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO:88999190626STD102
 ${EXTERNAL_ORDER_NO}    778880209OD002
@@ -23,14 +31,6 @@ ${EXTERNAL_ORDER_NO}    778880209OD002
 # External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_061 (สถานะต้องเป็น IN_TASK อยู่ก่อนแล้ว)
 # แก้ไขค่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO_IN_TASK:xxxxxxxxxx
 ${EXTERNAL_ORDER_NO_IN_TASK}    CHANGE_ME_IN_TASK_ORDER_NO
-
-# External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_058 (สถานะต้องเป็น Pending อยู่ก่อนแล้ว - cancel ควรสำเร็จ)
-# แก้ไขค่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO_PENDING:xxxxxxxxxx
-${EXTERNAL_ORDER_NO_PENDING}    889992406STD002
-
-# External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_059 (สถานะต้องเป็น Planned อยู่ก่อนแล้ว - cancel ควรสำเร็จ)
-# แก้ไขค่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO_PLANNED:xxxxxxxxxx
-${EXTERNAL_ORDER_NO_PLANNED}    CHANGE_ME_PLANNED_ORDER_NO
 
 # External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_062-068 (cancel ควรถูกปฏิเสธเหมือน TC_REG_061)
 # แก้ไขค่าเหล่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO_DISPATCHED:xxxxxxxxxx
