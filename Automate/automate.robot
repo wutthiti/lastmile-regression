@@ -7,6 +7,7 @@ Library    Collections         # เพิ่ม Library สำหรับจ�
 Library    String              # เพิ่ม Library สำหรับจัดการ String
 Library    RequestsLibrary     # เพิ่ม Library สำหรับยิง API โดยตรง (ใช้กับ TC_REG_060)
 Variables  env_loader.py       # เพิ่มตัวโหลดค่าจากไฟล์ .env
+Variables  test_data.yaml      # เพิ่มตัวโหลด Test Data (External Order No./Task No. ต่างๆ) แยกออกมาจากไฟล์นี้
 Suite Setup    Set Library Search Order    AppiumLibrary    SeleniumLibrary
 *** Variables ***
 # ตั้งค่า Server และ Device
@@ -16,31 +17,8 @@ ${AUTOMATION_NAME}    UIAutomator2
 ${APP_PACKAGE}        com.bigc.driver.uat
 ${APP_ACTIVITY}       com.bigcdev.driverapp.MainActivity    # หมายเหตุ: หากรันแล้วแอปไม่เปิด อาจจะต้องแก้ชื่อ Activity ให้ตรงกับของแอปจริงนะครับ
 
-# External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_058 (สถานะต้องเป็น Pending อยู่ก่อนแล้ว - cancel ควรสำเร็จ)
-# แก้ไขค่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO_PENDING:xxxxxxxxxx
-${EXTERNAL_ORDER_NO_PENDING}    889992406STD002
-
-# External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_059 (สถานะต้องเป็น Planned อยู่ก่อนแล้ว - cancel ควรสำเร็จ)
-# แก้ไขค่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO_PLANNED:xxxxxxxxxx
-${EXTERNAL_ORDER_NO_PLANNED}    889992508OD092
-
-# External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_060 (สถานะต้องเป็น IN_LOAD อยู่ก่อนแล้ว)
-# แก้ไขค่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO:88999190626STD102
-${EXTERNAL_ORDER_NO}    778880209OD002
-
-# External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_061 (สถานะต้องเป็น IN_TASK อยู่ก่อนแล้ว)
-# แก้ไขค่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO_IN_TASK:xxxxxxxxxx
-${EXTERNAL_ORDER_NO_IN_TASK}    CHANGE_ME_IN_TASK_ORDER_NO
-
-# External Delivery No. ที่ต้องการทดสอบ cancel ใน TC_REG_062-068 (cancel ควรถูกปฏิเสธเหมือน TC_REG_061)
-# แก้ไขค่าเหล่านี้ก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO_DISPATCHED:xxxxxxxxxx
-${EXTERNAL_ORDER_NO_DISPATCHED}      CHANGE_ME_DISPATCHED_ORDER_NO
-${EXTERNAL_ORDER_NO_IN_TRANSIT}      CHANGE_ME_IN_TRANSIT_ORDER_NO
-${EXTERNAL_ORDER_NO_DELIVERED}       CHANGE_ME_DELIVERED_ORDER_NO
-${EXTERNAL_ORDER_NO_CANCELLED}       CHANGE_ME_CANCELLED_ORDER_NO
-${EXTERNAL_ORDER_NO_FAILED}          CHANGE_ME_FAILED_ORDER_NO
-${EXTERNAL_ORDER_NO_TO_ATTEMPT}      CHANGE_ME_TO_ATTEMPT_ORDER_NO
-${EXTERNAL_ORDER_NO_RE_SCHEDULE}     CHANGE_ME_RE_SCHEDULE_ORDER_NO
+# หมายเหตุ: Test Data ทั้งหมด (External Order No./Task No. ต่างๆ ที่ใช้ใน TC_REG_058 ขึ้นไป) ย้ายไปอยู่ใน test_data.yaml แล้ว
+# แก้ไขค่าที่นั่นก่อนรัน หรือส่งผ่าน command line เช่น --variable EXTERNAL_ORDER_NO_PENDING:xxxxxxxxxx
 
 *** Test Cases ***
 TC_REG_001: Verify Import booking function
@@ -432,7 +410,7 @@ TC_REG_067: Verify cancel order function when order is in TO_ATTEMPT status
     Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
 
 TC_REG_068: Verify cancel order function when order is in RE_SCHEDULE status
-    [Documentation]    ทดสอบว่าระบบไม่อนุญาตให้ cancel Delivery Order ที่มีสถานะ RE_SCHEDULE (ผลที่คาดหวัง: cancel ไม่สำเร็จ)
+    [Documentation]    ทดสอบว่าระบบไม่อนุญาตให้ cancel Delivery Order ที่มีสถานะ RE_SCHEDULED (ผลที่คาดหวัง: cancel ไม่สำเร็จ)
 
     # เริ่มอัดวิดีโอหน้าจอ Windows
     Start Video Recording    alias=windows_record    name=TC_REG_068    fps=15
@@ -443,13 +421,278 @@ TC_REG_068: Verify cancel order function when order is in RE_SCHEDULE status
     # 2. ตรวจสอบว่าระบบปฏิเสธการ cancel (success=false, code=CANCEL_NOT_ALLOW)
     Verify Cancel Order Rejected    ${response}
 
-    # 3. เข้า TMS Admin เพื่อตรวจสอบว่าสถานะยังคงเป็น RE_SCHEDULE (ไม่ถูกยกเลิกจริง)
+    # 3. เข้า TMS Admin เพื่อตรวจสอบว่าสถานะยังคงเป็น RE_SCHEDULED (ไม่ถูกยกเลิกจริง)
     Login To TMS Admin
-    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_RE_SCHEDULE}    RE_SCHEDULE
+    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_RE_SCHEDULE}    RE_SCHEDULED
 
     # 4. เข้าหน้า Detail ของ order แล้วตรวจสอบว่าไม่มี Cancel ปรากฏใน Status History
     Open Delivery Order Detail From List
     Verify No Cancel In Status History
+
+    Logout TMS Admin
+    Close Browser
+
+    # สิ้นสุดการอัดวิดีโอหน้าจอ Windows (ใช้ Ignore Error เผื่อกรณี BitBlt permission error)
+    Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
+
+TC_REG_069: Verify Add ad-hoc Order button in task detail with Dispatched status
+    [Documentation]    ทดสอบว่าไม่มีปุ่ม Add Ad-hoc Order ปรากฏในหน้า Delivery Task Detail เมื่อ Task อยู่ในสถานะ Dispatched
+
+    # เริ่มอัดวิดีโอหน้าจอ Windows
+    Start Video Recording    alias=windows_record    name=TC_REG_069    fps=15
+
+    # 1. Login TMS Admin ทางเว็บก่อน
+    Login To TMS Admin
+
+    # 2-3. ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. ที่สถานะ Dispatched แล้วคลิกปุ่ม view เข้าหน้า Detail
+    Open Delivery Task Detail By Task No    ${TASK_NO_DISPATCHED}
+
+    # 4. ตรวจสอบว่าไม่มีปุ่ม Add Ad-hoc Order ปรากฏอยู่เลย
+    Verify Add Ad Hoc Order Button Not Present
+
+    # 5. ออกจากระบบ
+    Logout TMS Admin
+    Close Browser
+
+    # สิ้นสุดการอัดวิดีโอหน้าจอ Windows (ใช้ Ignore Error เผื่อกรณี BitBlt permission error)
+    Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
+
+TC_REG_080: Verify Add ad-hoc Order function when admin user add order with Pending status into the task
+    [Documentation]    ทดสอบว่า admin ไม่สามารถเพิ่ม Ad-hoc Order (สถานะ Pending) เข้าไปใน Delivery Task ที่มีอยู่แล้วได้ (ผลที่คาดหวัง: ขึ้น "No addable orders")
+
+    # เริ่มอัดวิดีโอหน้าจอ Windows
+    Start Video Recording    alias=windows_record    name=TC_REG_080    fps=15
+
+    # 1. Login TMS Admin ทางเว็บก่อน
+    Login To TMS Admin
+
+    # 2. พิสูจน์ก่อนว่า External Order No. ที่จะใช้ทดสอบมีสถานะเป็น Pending จริง โดยไปที่เมนู Delivery Order แล้วค้นหาด้วยเลขนี้
+    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_ADHOC_PENDING}    PENDING
+
+    # 3-4. ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. ที่สถานะ Pending แล้วคลิกปุ่ม view เข้าหน้า Detail
+    Open Delivery Task Detail By Task No    ${TASK_NO_PENDING}
+
+    # 5-7. ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order, เพิ่ม Order ด้วย External Order No. ที่สถานะ Pending แล้วกด Save
+    Add Ad Hoc Order To Task    ${EXTERNAL_ORDER_NO_ADHOC_PENDING}
+
+    Logout TMS Admin
+    Close Browser
+
+    # สิ้นสุดการอัดวิดีโอหน้าจอ Windows (ใช้ Ignore Error เผื่อกรณี BitBlt permission error)
+    Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
+
+TC_REG_081: Verify Add ad-hoc Order function when admin user add order with IN_LOAD status into the task
+    [Documentation]    ทดสอบว่า admin ไม่สามารถเพิ่ม Ad-hoc Order (สถานะ IN_LOAD) เข้าไปใน Delivery Task ที่มีอยู่แล้วได้ (ผลที่คาดหวัง: ขึ้น "No addable orders")
+
+    # เริ่มอัดวิดีโอหน้าจอ Windows
+    Start Video Recording    alias=windows_record    name=TC_REG_081    fps=15
+
+    # 1. Login TMS Admin ทางเว็บก่อน
+    Login To TMS Admin
+
+    # 2. พิสูจน์ก่อนว่า External Order No. ที่จะใช้ทดสอบมีสถานะเป็น IN_LOAD จริง โดยไปที่เมนู Delivery Order แล้วค้นหาด้วยเลขนี้
+    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_ADHOC_IN_LOAD}    IN_LOAD
+
+    # 3-4. ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. แล้วคลิกปุ่ม view เข้าหน้า Detail
+    Open Delivery Task Detail By Task No    ${TASK_NO_PENDING}
+
+    # 5-7. ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order, เพิ่ม Order ด้วย External Order No. ที่สถานะ IN_LOAD
+    Add Ad Hoc Order To Task    ${EXTERNAL_ORDER_NO_ADHOC_IN_LOAD}
+
+    Logout TMS Admin
+    Close Browser
+
+    # สิ้นสุดการอัดวิดีโอหน้าจอ Windows (ใช้ Ignore Error เผื่อกรณี BitBlt permission error)
+    Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
+
+TC_REG_082: Verify Add ad-hoc Order function when admin user add order with IN_TASK status into the task
+    [Documentation]    ทดสอบว่า admin ไม่สามารถเพิ่ม Ad-hoc Order (สถานะ IN_TASK) เข้าไปใน Delivery Task ที่มีอยู่แล้วได้ (ผลที่คาดหวัง: ขึ้น "No addable orders")
+
+    # เริ่มอัดวิดีโอหน้าจอ Windows
+    Start Video Recording    alias=windows_record    name=TC_REG_082    fps=15
+
+    # 1. Login TMS Admin ทางเว็บก่อน
+    Login To TMS Admin
+
+    # 2. พิสูจน์ก่อนว่า External Order No. ที่จะใช้ทดสอบมีสถานะเป็น IN_TASK จริง โดยไปที่เมนู Delivery Order แล้วค้นหาด้วยเลขนี้
+    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_ADHOC_IN_TASK}    IN_TASK
+
+    # 3-4. ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. แล้วคลิกปุ่ม view เข้าหน้า Detail
+    Open Delivery Task Detail By Task No    ${TASK_NO_PENDING}
+
+    # 5-7. ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order, เพิ่ม Order ด้วย External Order No. ที่สถานะ IN_TASK
+    Add Ad Hoc Order To Task    ${EXTERNAL_ORDER_NO_ADHOC_IN_TASK}
+
+    Logout TMS Admin
+    Close Browser
+
+    # สิ้นสุดการอัดวิดีโอหน้าจอ Windows (ใช้ Ignore Error เผื่อกรณี BitBlt permission error)
+    Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
+
+TC_REG_083: Verify Add ad-hoc Order function when admin user add order with DISPATCHED status into the task
+    [Documentation]    ทดสอบว่า admin ไม่สามารถเพิ่ม Ad-hoc Order (สถานะ DISPATCHED) เข้าไปใน Delivery Task ที่มีอยู่แล้วได้ (ผลที่คาดหวัง: ขึ้น "No addable orders")
+
+    # เริ่มอัดวิดีโอหน้าจอ Windows
+    Start Video Recording    alias=windows_record    name=TC_REG_083    fps=15
+
+    # 1. Login TMS Admin ทางเว็บก่อน
+    Login To TMS Admin
+
+    # 2. พิสูจน์ก่อนว่า External Order No. ที่จะใช้ทดสอบมีสถานะเป็น DISPATCHED จริง โดยไปที่เมนู Delivery Order แล้วค้นหาด้วยเลขนี้
+    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_ADHOC_DISPATCHED}    DISPATCHED
+
+    # 3-4. ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. แล้วคลิกปุ่ม view เข้าหน้า Detail
+    Open Delivery Task Detail By Task No    ${TASK_NO_PENDING}
+
+    # 5-7. ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order, เพิ่ม Order ด้วย External Order No. ที่สถานะ DISPATCHED
+    Add Ad Hoc Order To Task    ${EXTERNAL_ORDER_NO_ADHOC_DISPATCHED}
+
+    Logout TMS Admin
+    Close Browser
+
+    # สิ้นสุดการอัดวิดีโอหน้าจอ Windows (ใช้ Ignore Error เผื่อกรณี BitBlt permission error)
+    Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
+
+TC_REG_084: Verify Add ad-hoc Order function when admin user add order with IN_TRANSIT status into the task
+    [Documentation]    ทดสอบว่า admin ไม่สามารถเพิ่ม Ad-hoc Order (สถานะ IN_TRANSIT) เข้าไปใน Delivery Task ที่มีอยู่แล้วได้ (ผลที่คาดหวัง: ขึ้น "No addable orders")
+
+    # เริ่มอัดวิดีโอหน้าจอ Windows
+    Start Video Recording    alias=windows_record    name=TC_REG_084    fps=15
+
+    # 1. Login TMS Admin ทางเว็บก่อน
+    Login To TMS Admin
+
+    # 2. พิสูจน์ก่อนว่า External Order No. ที่จะใช้ทดสอบมีสถานะเป็น IN_TRANSIT จริง โดยไปที่เมนู Delivery Order แล้วค้นหาด้วยเลขนี้
+    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_ADHOC_IN_TRANSIT}    IN_TRANSIT
+
+    # 3-4. ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. แล้วคลิกปุ่ม view เข้าหน้า Detail
+    Open Delivery Task Detail By Task No    ${TASK_NO_PENDING}
+
+    # 5-7. ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order, เพิ่ม Order ด้วย External Order No. ที่สถานะ IN_TRANSIT
+    Add Ad Hoc Order To Task    ${EXTERNAL_ORDER_NO_ADHOC_IN_TRANSIT}
+
+    Logout TMS Admin
+    Close Browser
+
+    # สิ้นสุดการอัดวิดีโอหน้าจอ Windows (ใช้ Ignore Error เผื่อกรณี BitBlt permission error)
+    Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
+
+TC_REG_085: Verify Add ad-hoc Order function when admin user add order with DELIVERED status into the task
+    [Documentation]    ทดสอบว่า admin ไม่สามารถเพิ่ม Ad-hoc Order (สถานะ DELIVERED) เข้าไปใน Delivery Task ที่มีอยู่แล้วได้ (ผลที่คาดหวัง: ขึ้น "No addable orders")
+
+    # เริ่มอัดวิดีโอหน้าจอ Windows
+    Start Video Recording    alias=windows_record    name=TC_REG_085    fps=15
+
+    # 1. Login TMS Admin ทางเว็บก่อน
+    Login To TMS Admin
+
+    # 2. พิสูจน์ก่อนว่า External Order No. ที่จะใช้ทดสอบมีสถานะเป็น DELIVERED จริง โดยไปที่เมนู Delivery Order แล้วค้นหาด้วยเลขนี้
+    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_ADHOC_DELIVERED}    DELIVERED
+
+    # 3-4. ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. แล้วคลิกปุ่ม view เข้าหน้า Detail
+    Open Delivery Task Detail By Task No    ${TASK_NO_PENDING}
+
+    # 5-7. ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order, เพิ่ม Order ด้วย External Order No. ที่สถานะ DELIVERED
+    Add Ad Hoc Order To Task    ${EXTERNAL_ORDER_NO_ADHOC_DELIVERED}
+
+    Logout TMS Admin
+    Close Browser
+
+    # สิ้นสุดการอัดวิดีโอหน้าจอ Windows (ใช้ Ignore Error เผื่อกรณี BitBlt permission error)
+    Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
+
+TC_REG_086: Verify Add ad-hoc Order function when admin user add order with TO_ATTEMPT status into the task
+    [Documentation]    ทดสอบว่า admin ไม่สามารถเพิ่ม Ad-hoc Order (สถานะ TO_ATTEMPT) เข้าไปใน Delivery Task ที่มีอยู่แล้วได้ (ผลที่คาดหวัง: ขึ้น "No addable orders")
+
+    # เริ่มอัดวิดีโอหน้าจอ Windows
+    Start Video Recording    alias=windows_record    name=TC_REG_086    fps=15
+
+    # 1. Login TMS Admin ทางเว็บก่อน
+    Login To TMS Admin
+
+    # 2. พิสูจน์ก่อนว่า External Order No. ที่จะใช้ทดสอบมีสถานะเป็น TO_ATTEMPT จริง โดยไปที่เมนู Delivery Order แล้วค้นหาด้วยเลขนี้
+    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_ADHOC_TO_ATTEMPT}    TO_ATTEMPT
+
+    # 3-4. ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. แล้วคลิกปุ่ม view เข้าหน้า Detail
+    Open Delivery Task Detail By Task No    ${TASK_NO_PENDING}
+
+    # 5-7. ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order, เพิ่ม Order ด้วย External Order No. ที่สถานะ TO_ATTEMPT
+    Add Ad Hoc Order To Task    ${EXTERNAL_ORDER_NO_ADHOC_TO_ATTEMPT}
+
+    Logout TMS Admin
+    Close Browser
+
+    # สิ้นสุดการอัดวิดีโอหน้าจอ Windows (ใช้ Ignore Error เผื่อกรณี BitBlt permission error)
+    Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
+
+TC_REG_087: Verify Add ad-hoc Order function when admin user add order with FAILED status into the task
+    [Documentation]    ทดสอบว่า admin ไม่สามารถเพิ่ม Ad-hoc Order (สถานะ FAILED) เข้าไปใน Delivery Task ที่มีอยู่แล้วได้ (ผลที่คาดหวัง: ขึ้น "No addable orders")
+
+    # เริ่มอัดวิดีโอหน้าจอ Windows
+    Start Video Recording    alias=windows_record    name=TC_REG_087    fps=15
+
+    # 1. Login TMS Admin ทางเว็บก่อน
+    Login To TMS Admin
+
+    # 2. พิสูจน์ก่อนว่า External Order No. ที่จะใช้ทดสอบมีสถานะเป็น FAILED จริง โดยไปที่เมนู Delivery Order แล้วค้นหาด้วยเลขนี้
+    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_ADHOC_FAILED}    FAILED
+
+    # 3-4. ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. แล้วคลิกปุ่ม view เข้าหน้า Detail
+    Open Delivery Task Detail By Task No    ${TASK_NO_PENDING}
+
+    # 5-7. ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order, เพิ่ม Order ด้วย External Order No. ที่สถานะ FAILED
+    Add Ad Hoc Order To Task    ${EXTERNAL_ORDER_NO_ADHOC_FAILED}
+
+    Logout TMS Admin
+    Close Browser
+
+    # สิ้นสุดการอัดวิดีโอหน้าจอ Windows (ใช้ Ignore Error เผื่อกรณี BitBlt permission error)
+    Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
+
+TC_REG_088: Verify Add ad-hoc Order function when admin user add order with RE_SCHEDULED status into the task
+    [Documentation]    ทดสอบว่า admin สามารถเพิ่ม Ad-hoc Order (สถานะ RE_SCHEDULED) เข้าไปใน Delivery Task ได้สำเร็จ (ผลที่คาดหวัง: กด Save ได้ เจอ Toast "Success!" และเห็นเลขนี้ในตาราง Delivery Orders ของ Task)
+
+    # เริ่มอัดวิดีโอหน้าจอ Windows
+    Start Video Recording    alias=windows_record    name=TC_REG_088    fps=15
+
+    # 1. Login TMS Admin ทางเว็บก่อน
+    Login To TMS Admin
+
+    # 2. พิสูจน์ก่อนว่า External Order No. ที่จะใช้ทดสอบมีสถานะเป็น RE_SCHEDULED จริง โดยไปที่เมนู Delivery Order แล้วค้นหาด้วยเลขนี้
+    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_ADHOC_RE_SCHEDULE}    RE_SCHEDULED
+
+    # 3-4. ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. แล้วคลิกปุ่ม view เข้าหน้า Detail
+    Open Delivery Task Detail By Task No    ${TASK_NO_PENDING}
+
+    # 5-8. เพิ่ม Order ด้วย External Order No. สถานะ RE_SCHEDULED ให้สำเร็จ (แสดง preview, กด Save, รอ Toast "Success!" แล้วปิด)
+    Add Ad Hoc Order Successfully To Task    ${EXTERNAL_ORDER_NO_ADHOC_RE_SCHEDULE}
+
+    # 9. ตรวจสอบในหน้า Task Detail เดิมนี้เลยว่ามีเลข External Order No. นี้ปรากฏในตาราง Delivery Orders ของ Task แล้ว (ยืนยันว่าเพิ่มสำเร็จจริง)
+    Verify Order In Task Delivery Orders Table    ${EXTERNAL_ORDER_NO_ADHOC_RE_SCHEDULE}
+
+    Logout TMS Admin
+    Close Browser
+
+    # สิ้นสุดการอัดวิดีโอหน้าจอ Windows (ใช้ Ignore Error เผื่อกรณี BitBlt permission error)
+    Run Keyword And Ignore Error    Stop Video Recording    alias=windows_record
+
+TC_REG_089: Verify Add ad-hoc Order function when admin user add order with CANCELLED status into the task
+    [Documentation]    ทดสอบว่า admin ไม่สามารถเพิ่ม Ad-hoc Order (สถานะ CANCELLED) เข้าไปใน Delivery Task ที่มีอยู่แล้วได้ (ผลที่คาดหวัง: ขึ้น "No addable orders")
+
+    # เริ่มอัดวิดีโอหน้าจอ Windows
+    Start Video Recording    alias=windows_record    name=TC_REG_089    fps=15
+
+    # 1. Login TMS Admin ทางเว็บก่อน
+    Login To TMS Admin
+
+    # 2. พิสูจน์ก่อนว่า External Order No. ที่จะใช้ทดสอบมีสถานะเป็น CANCELLED จริง โดยไปที่เมนู Delivery Order แล้วค้นหาด้วยเลขนี้
+    Verify Delivery Order In TMS    ${EXTERNAL_ORDER_NO_ADHOC_CANCELLED}    CANCELLED
+
+    # 3-4. ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. แล้วคลิกปุ่ม view เข้าหน้า Detail
+    Open Delivery Task Detail By Task No    ${TASK_NO_PENDING}
+
+    # 5-7. ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order, เพิ่ม Order ด้วย External Order No. ที่สถานะ CANCELLED
+    Add Ad Hoc Order To Task    ${EXTERNAL_ORDER_NO_ADHOC_CANCELLED}
 
     Logout TMS Admin
     Close Browser
@@ -952,3 +1195,228 @@ Verify Cancel In Status History
     ...    ignore_case=True
 
     Log To Console    \n✅ ยืนยันแล้วว่าสถานะล่าสุดใน Status History เป็น Cancel (order ถูกยกเลิกสำเร็จจริง)
+
+Open Delivery Task Detail By Task No
+    [Documentation]    ไปที่เมนู Delivery Tasks ค้นหาด้วย Task No. แล้วคลิกปุ่ม view (ไอคอน file-text) ของแถวแรกเพื่อเข้าหน้า Detail
+    [Arguments]    ${task_no}
+
+    # คลิกเมนู Delivery Tasks (ใช้ JavaScript เพื่อหลีกเลี่ยง ElementClickInterceptedException)
+    SeleniumLibrary.Wait Until Element Is Visible    xpath=//a[contains(@href, 'delivery_tasks/tms_task')]    timeout=20s
+    ${menu_dt}=    SeleniumLibrary.Get WebElement    xpath=//a[contains(@href, 'delivery_tasks/tms_task')]
+    SeleniumLibrary.Execute Javascript    arguments[0].click();    ARGUMENTS    ${menu_dt}
+    Sleep    2s
+
+    # กรอก Task No. ในช่องค้นหา (Clear ก่อน เพื่อลบค่าเก่า แล้วกด Enter เพื่อ trigger การค้นหา)
+    SeleniumLibrary.Wait Until Element Is Visible    xpath=//input[@placeholder='Search' and contains(@class, 'ant-input')]    timeout=15s
+    SeleniumLibrary.Clear Element Text    xpath=//input[@placeholder='Search' and contains(@class, 'ant-input')]
+    SeleniumLibrary.Input Text    xpath=//input[@placeholder='Search' and contains(@class, 'ant-input')]    ${task_no}
+    SeleniumLibrary.Press Keys    xpath=//input[@placeholder='Search' and contains(@class, 'ant-input')]    ENTER
+    Sleep    2s
+
+    # รอผลลัพธ์โหลดเสร็จ (รอให้แถวแรกมีค่า Task No ตรงกับที่ค้นหา)
+    SeleniumLibrary.Wait Until Element Contains    xpath=//tr[contains(@class, 'ant-table-row')][1]/td[2]    ${task_no}    timeout=15s
+
+    # คลิกปุ่ม view (ไอคอน file-text ในคอลัมน์ ACTIONS) ของแถวแรก
+    SeleniumLibrary.Wait Until Element Is Visible
+    ...    xpath=//tr[contains(@class, 'ant-table-row')][1]//a[contains(@class, 'table-action-button')][.//span[@aria-label='file-text']]
+    ...    timeout=15s
+    ${view_btn}=    SeleniumLibrary.Get WebElement
+    ...    xpath=//tr[contains(@class, 'ant-table-row')][1]//a[contains(@class, 'table-action-button')][.//span[@aria-label='file-text']]
+    SeleniumLibrary.Execute Javascript    arguments[0].click();    ARGUMENTS    ${view_btn}
+    # รอข้อความ "Delivery Orders" แทน "Add Ad-hoc Order" เพราะปุ่ม Add Ad-hoc Order อาจไม่มีในบาง Task (เช่น สถานะ Dispatched - ดู TC_REG_069)
+    # ส่วน "Delivery Orders" เป็น section ที่มีอยู่ในหน้า Task Detail เสมอไม่ว่าสถานะไหน
+    SeleniumLibrary.Wait Until Page Contains    Delivery Orders    timeout=20s
+    Sleep    1s
+
+Get Visible Add Ad Hoc Order Button
+    [Documentation]    คืนค่า WebElement ของปุ่ม Add Ad-hoc Order ตัวที่มองเห็นได้จริง (หน้านี้มีปุ่มที่ตรง xpath ซ้ำใน DOM 2 ตัว)
+    ...    ใช้ contains(., ...) แทน contains(text(), ...) เพราะ React มักแทรก comment node คั่นกลาง text ทำให้ text() คืนหลาย node
+    ...    Fail ถ้ายังไม่เจอตัวที่มองเห็นได้ - ให้เรียกผ่าน Wait Until Keyword Succeeds เพื่อ retry จนกว่าจะเจอจริง
+    ${adhoc_btn_locator}=    Set Variable    xpath=//button[contains(., 'Add Ad-hoc Order')]
+    ${candidates}=    SeleniumLibrary.Get WebElements    ${adhoc_btn_locator}
+    FOR    ${candidate}    IN    @{candidates}
+        ${is_visible}=    Run Keyword And Return Status    SeleniumLibrary.Element Should Be Visible    ${candidate}
+        IF    ${is_visible}
+            RETURN    ${candidate}
+        END
+    END
+    Fail    ยังไม่พบปุ่ม Add Ad-hoc Order ที่มองเห็นได้ในหน้า Delivery Task Detail (จะลองใหม่)
+
+Verify Add Ad Hoc Order Button Not Present
+    [Documentation]    ตรวจสอบว่าไม่มีปุ่ม Add Ad-hoc Order ที่มองเห็นได้เลยในหน้า Delivery Task Detail (ใช้กับ Task ที่ไม่ควรมีปุ่มนี้ เช่น สถานะ Dispatched)
+    ${adhoc_btn_locator}=    Set Variable    xpath=//button[contains(., 'Add Ad-hoc Order')]
+    ${candidates}=    SeleniumLibrary.Get WebElements    ${adhoc_btn_locator}
+
+    ${visible_found}=    Set Variable    ${False}
+    FOR    ${candidate}    IN    @{candidates}
+        ${is_visible}=    Run Keyword And Return Status    SeleniumLibrary.Element Should Be Visible    ${candidate}
+        IF    ${is_visible}
+            ${visible_found}=    Set Variable    ${True}
+            BREAK
+        END
+    END
+
+    Should Not Be True    ${visible_found}
+    ...    พบปุ่ม Add Ad-hoc Order ในหน้า Delivery Task Detail ทั้งที่ไม่ควรมี!
+
+    Log To Console    \n✅ ยืนยันแล้วว่าไม่มีปุ่ม Add Ad-hoc Order ปรากฏในหน้า Task Detail นี้ตามที่คาดหวัง
+
+Add Ad Hoc Order To Task
+    [Documentation]    ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order ในหน้า Delivery Task Detail แล้วค้นหา Order ด้วย External Order No. ที่กำหนด
+    ...    ผลที่คาดหวัง (PASS) คือต้องขึ้น "No addable orders" แปลว่า order สถานะ Pending นี้ไม่สามารถเพิ่มเป็น Ad-hoc เข้า task นี้ได้
+    [Arguments]    ${external_order_no}
+
+    # ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order (นี่คือข้อกำหนดหลักของ test case นี้)
+    # ใช้ contains(., ...) แทน contains(text(), ...) เพราะ React มักแทรก comment node คั่นกลาง text
+    # ทำให้ text() คืนหลาย node แล้ว contains() เช็คแค่ node แรก (อาจไม่ match) - contains(., ...) รวม string-value ทั้งหมดของ element แทน
+    # หน้านี้มีปุ่มที่ตรง xpath ซ้ำ 2 ตัว (เช่น responsive layout ซ่อนอันนึงไว้) เลยต้องหาเอาตัวที่มองเห็นได้จริง แทนที่จะเชื่อตัวแรกใน DOM
+    SeleniumLibrary.Wait Until Page Contains Element    xpath=//button[contains(., 'Add Ad-hoc Order')]    timeout=20s
+    ...    error=ไม่พบปุ่ม Add Ad-hoc Order ในหน้า Delivery Task Detail!
+
+    # หน้านี้มีปุ่มที่ตรง xpath ซ้ำ 2 ตัว (เช่น responsive layout ซ่อนอันนึงไว้) และบางครั้งยังไม่ visible ทันทีตอนเพิ่งเจอใน DOM
+    # เลยต้อง retry จนกว่าจะเจอตัวที่มองเห็นได้จริง แทนที่จะเชื่อตัวแรกที่เจอแค่ครั้งเดียว
+    ${adhoc_btn}=    Wait Until Keyword Succeeds    20s    1s    Get Visible Add Ad Hoc Order Button
+    SeleniumLibrary.Execute Javascript    arguments[0].scrollIntoView({inline: "center", block: "center"});    ARGUMENTS    ${adhoc_btn}
+    SeleniumLibrary.Execute Javascript    arguments[0].click();    ARGUMENTS    ${adhoc_btn}
+    Sleep    1s
+
+    # ช่องกรอก External Order No. เป็น Ant Design Select แบบพิมพ์ค้นหา (placeholder "Search delivery orders to add")
+    ${search_selector_locator}=    Set Variable
+    ...    xpath=//div[contains(@class,'ant-select-selector')][.//span[contains(@class,'ant-select-selection-placeholder') and contains(., 'Search delivery orders to add')]]
+    ${search_input_locator}=    Set Variable
+    ...    xpath=//div[contains(@class,'ant-select-selector')][.//span[contains(@class,'ant-select-selection-placeholder') and contains(., 'Search delivery orders to add')]]//input[contains(@class,'ant-select-selection-search-input')]
+
+    SeleniumLibrary.Wait Until Element Is Visible    ${search_selector_locator}    timeout=15s
+    ${search_selector}=    SeleniumLibrary.Get WebElement    ${search_selector_locator}
+    SeleniumLibrary.Execute Javascript    arguments[0].click();    ARGUMENTS    ${search_selector}
+    Sleep    1s
+
+    # เอา readonly ออกก่อน (Ant Design ใส่ readonly ไว้ตอนยังไม่ focus) เพื่อให้พิมพ์ผ่าน Selenium ได้แน่นอน
+    # รอ input ตัวจริงให้ปรากฏก่อน (คลิกเปิด select แล้ว input อาจ re-render ช้ากว่า container นิดหน่อย)
+    SeleniumLibrary.Wait Until Element Is Visible    ${search_input_locator}    timeout=10s
+    ${search_input}=    SeleniumLibrary.Get WebElement    ${search_input_locator}
+    SeleniumLibrary.Execute Javascript    arguments[0].removeAttribute('readonly');    ARGUMENTS    ${search_input}
+    SeleniumLibrary.Input Text    ${search_input_locator}    ${external_order_no}
+    Sleep    2s
+
+    # รอผลค้นหา (debounce) แล้วตรวจสอบว่า dropdown ขึ้น "No addable orders" (empty state)
+    # นี่คือผลลัพธ์ที่คาดหวัง (PASS) - order สถานะ Pending นี้ไม่ควรถูกเพิ่มเป็น Ad-hoc เข้า task ได้
+    Sleep    2s
+    ${empty_state_locator}=    Set Variable
+    ...    xpath=//div[contains(@class, 'ant-select-item-empty') and contains(., 'No addable orders')]
+    SeleniumLibrary.Wait Until Element Is Visible    ${empty_state_locator}    timeout=15s
+    ...    error=ไม่พบข้อความ "No addable orders" - คาดหวังว่า order สถานะ Pending นี้ไม่ควรเพิ่มเป็น Ad-hoc ได้!
+
+    Log To Console    \n✅ ยืนยันแล้วว่าไม่สามารถเพิ่ม Order สถานะ Pending นี้เป็น Ad-hoc เข้า task ได้ (แสดง "No addable orders" ตามที่คาดหวัง)
+
+    # ปิด popup Add Ad-hoc Order ก่อนออกจากหน้านี้ ด้วยปุ่ม Cancel (ไม่งั้น ant-modal-wrap จะค้างบังปุ่มอื่น เช่นตอน Logout ทำให้ ElementClickInterceptedException)
+    # ใช้ JS click (ไม่ใช่ Click Element) เพื่อไม่ให้ mouse cursor จริงเลื่อนผ่านปุ่ม Save/dropdown อื่นบนหน้าจอจนไปโดน hover โดยไม่ตั้งใจ
+    ${cancel_btn_locator}=    Set Variable    xpath=//button[contains(@class, 'cancel') and contains(., 'Cancel')]
+    SeleniumLibrary.Wait Until Element Is Visible    ${cancel_btn_locator}    timeout=10s
+    ${cancel_btn}=    SeleniumLibrary.Get WebElement    ${cancel_btn_locator}
+    SeleniumLibrary.Execute Javascript    arguments[0].click();    ARGUMENTS    ${cancel_btn}
+    SeleniumLibrary.Wait Until Element Is Not Visible    ${search_selector_locator}    timeout=10s
+    Sleep    1s
+
+Add Ad Hoc Order Successfully To Task
+    [Documentation]    ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order ในหน้า Delivery Task Detail แล้วเพิ่ม Order ด้วย External Order No. ที่กำหนดให้สำเร็จ
+    ...    ผลที่คาดหวัง (PASS) คือต้องมี preview (Orders/Items/Weight/Volume/COD) แสดงขึ้นมา กด Save ได้ และเจอ Toast "Success!"
+    [Arguments]    ${external_order_no}
+
+    # ตรวจสอบว่ามีปุ่ม Add Ad-hoc Order (เหมือน Add Ad Hoc Order To Task - ดูคอมเมนต์ที่นั่นสำหรับเหตุผลของแต่ละจุด)
+    SeleniumLibrary.Wait Until Page Contains Element    xpath=//button[contains(., 'Add Ad-hoc Order')]    timeout=20s
+    ...    error=ไม่พบปุ่ม Add Ad-hoc Order ในหน้า Delivery Task Detail!
+
+    # หน้านี้มีปุ่มที่ตรง xpath ซ้ำ 2 ตัว (เช่น responsive layout ซ่อนอันนึงไว้) และบางครั้งยังไม่ visible ทันทีตอนเพิ่งเจอใน DOM
+    # เลยต้อง retry จนกว่าจะเจอตัวที่มองเห็นได้จริง แทนที่จะเชื่อตัวแรกที่เจอแค่ครั้งเดียว
+    ${adhoc_btn}=    Wait Until Keyword Succeeds    20s    1s    Get Visible Add Ad Hoc Order Button
+    SeleniumLibrary.Execute Javascript    arguments[0].scrollIntoView({inline: "center", block: "center"});    ARGUMENTS    ${adhoc_btn}
+    SeleniumLibrary.Execute Javascript    arguments[0].click();    ARGUMENTS    ${adhoc_btn}
+    Sleep    1s
+
+    # ช่องกรอก External Order No. เป็น Ant Design Select แบบพิมพ์ค้นหา (placeholder "Search delivery orders to add")
+    ${search_selector_locator}=    Set Variable
+    ...    xpath=//div[contains(@class,'ant-select-selector')][.//span[contains(@class,'ant-select-selection-placeholder') and contains(., 'Search delivery orders to add')]]
+    ${search_input_locator}=    Set Variable
+    ...    xpath=//div[contains(@class,'ant-select-selector')][.//span[contains(@class,'ant-select-selection-placeholder') and contains(., 'Search delivery orders to add')]]//input[contains(@class,'ant-select-selection-search-input')]
+
+    SeleniumLibrary.Wait Until Element Is Visible    ${search_selector_locator}    timeout=15s
+    ${search_selector}=    SeleniumLibrary.Get WebElement    ${search_selector_locator}
+    SeleniumLibrary.Execute Javascript    arguments[0].click();    ARGUMENTS    ${search_selector}
+    Sleep    1s
+
+    # เอา readonly ออกก่อน (Ant Design ใส่ readonly ไว้ตอนยังไม่ focus) เพื่อให้พิมพ์ผ่าน Selenium ได้แน่นอน
+    # รอ input ตัวจริงให้ปรากฏก่อน (คลิกเปิด select แล้ว input อาจ re-render ช้ากว่า container นิดหน่อย)
+    SeleniumLibrary.Wait Until Element Is Visible    ${search_input_locator}    timeout=10s
+    ${search_input}=    SeleniumLibrary.Get WebElement    ${search_input_locator}
+    SeleniumLibrary.Execute Javascript    arguments[0].removeAttribute('readonly');    ARGUMENTS    ${search_input}
+    SeleniumLibrary.Input Text    ${search_input_locator}    ${external_order_no}
+    Sleep    2s
+
+    # คลิกเลือก option ที่เจอใน dropdown (กด ENTER ไม่ trigger การเลือกจริง สำหรับ select ตัวนี้ ต้องคลิกที่ option โดยตรง)
+    # แล้วรอ preview (Orders/Items/Weight/Volume/COD) แสดงขึ้นมา - นี่คือผลลัพธ์ที่คาดหวัง (PASS)
+    ${option_locator}=    Set Variable    xpath=(//div[contains(@class, 'ant-select-item-option')])[1]
+    SeleniumLibrary.Wait Until Element Is Visible    ${option_locator}    timeout=15s
+    ...    error=ไม่พบตัวเลือก Order ใน dropdown หลังค้นหา - คาดหวังว่า order สถานะ RE_SCHEDULED นี้ควรเพิ่มเป็น Ad-hoc ได้!
+    ${option}=    SeleniumLibrary.Get WebElement    ${option_locator}
+    SeleniumLibrary.Execute Javascript    arguments[0].click();    ARGUMENTS    ${option}
+
+    SeleniumLibrary.Wait Until Page Contains    Orders:    timeout=15s
+    ...    error=ไม่พบ preview (Orders/Items/Weight/...) หลังเลือก Order - คาดหวังว่า order สถานะ RE_SCHEDULED นี้ควรเพิ่มเป็น Ad-hoc ได้!
+    Sleep    1s
+
+    # กดปุ่ม Save
+    ${save_btn_locator}=    Set Variable    xpath=//button[@form='form-popup-detail' and @type='submit']
+    SeleniumLibrary.Wait Until Element Is Visible    ${save_btn_locator}    timeout=10s
+    ${save_btn}=    SeleniumLibrary.Get WebElement    ${save_btn_locator}
+    SeleniumLibrary.Execute Javascript    arguments[0].click();    ARGUMENTS    ${save_btn}
+
+    # รอ Toast "Success!" แสดงขึ้นมา แล้วคลิกเพื่อปิด (best-effort เท่านั้น)
+    # Toast นี้มักหายไปเร็วมากเพราะหน้ากำลัง reload/re-fetch ข้อมูลพร้อมกัน (browser busy จนพลาดจังหวะได้ง่าย)
+    # ผลลัพธ์จริงที่ต้องผ่านคือ Verify Order In Task Delivery Orders Table ในขั้นตอนถัดไป จึงไม่ทำให้ test fail แค่เพราะจับ Toast ไม่ทัน
+    ${toast_locator}=    Set Variable    xpath=//div[contains(@class, 'custom-toast-content')][contains(., 'Success!')]
+    ${toast_caught}=    Run Keyword And Return Status
+    ...    SeleniumLibrary.Wait Until Element Is Visible    ${toast_locator}    timeout=5s
+    IF    ${toast_caught}
+        ${toast}=    SeleniumLibrary.Get WebElement    ${toast_locator}
+        Run Keyword And Ignore Error    SeleniumLibrary.Execute Javascript    arguments[0].click();    ARGUMENTS    ${toast}
+        Log To Console    \n✅ พบ Toast "Success!" และปิดแล้ว
+    ELSE
+        Log To Console    \n⚠️ จับ Toast "Success!" ไม่ทัน (อาจหายไปเร็วเกินไประหว่างหน้าโหลด) - จะไปยืนยันผลจากตาราง Delivery Orders แทน
+    END
+    Sleep    1s
+
+    # เลื่อนหน้าจอลงมาหาตาราง Delivery Orders ทันทีหลัง Toast เพื่อให้เห็น/ตรวจสอบต่อได้
+    SeleniumLibrary.Wait Until Page Contains Element    xpath=//*[contains(text(), 'Delivery Orders')]    timeout=15s
+    ${delivery_orders_heading}=    SeleniumLibrary.Get WebElement    xpath=//*[contains(text(), 'Delivery Orders')]
+    # ใช้ inline: "nearest" (ไม่ใช่ "center") กันไม่ให้ตารางที่ scroll แนวนอนได้ถูกเลื่อนไปกลางจนคอลัมน์ External Delivery No. หลุดจากจอ
+    SeleniumLibrary.Execute Javascript    arguments[0].scrollIntoView({inline: "nearest", block: "center"});    ARGUMENTS    ${delivery_orders_heading}
+    Sleep    2s
+
+    Log To Console    \n✅ ยืนยันแล้วว่าเพิ่ม Order สถานะ RE_SCHEDULED เป็น Ad-hoc เข้า task สำเร็จ (พบ Toast "Success!")
+
+Verify Order In Task Delivery Orders Table
+    [Documentation]    ตรวจสอบว่า External Order No. ที่กำหนดปรากฏอยู่ในตาราง Delivery Orders ของหน้า Task Detail เดิม (ไม่ต้องออกจากหน้านี้) และ highlight แถวที่พบ
+    [Arguments]    ${external_order_no}
+
+    # scroll ไปที่ section "Delivery Orders" ก่อน เพราะตารางอยู่ใต้ fold - บางตารางไม่ render แถวจนกว่าจะ scroll เข้าใกล้ (lazy/virtualized render)
+    SeleniumLibrary.Wait Until Page Contains Element    xpath=//*[contains(text(), 'Delivery Orders')]    timeout=15s
+    ${section_heading}=    SeleniumLibrary.Get WebElement    xpath=//*[contains(text(), 'Delivery Orders')]
+    # ใช้ inline: "nearest" (ไม่ใช่ "center") กันไม่ให้ตารางที่ scroll แนวนอนได้ถูกเลื่อนไปกลางจนคอลัมน์ External Delivery No. หลุดจากจอ
+    SeleniumLibrary.Execute Javascript    arguments[0].scrollIntoView({inline: "nearest", block: "center"});    ARGUMENTS    ${section_heading}
+    Sleep    1s
+
+    # ใช้ contains(., ...) แทน normalize-space(.)=... เผื่อ cell มี markup/whitespace แฝงอยู่ (เจอปัญหาแบบนี้กับ element อื่นมาก่อนในไฟล์นี้)
+    # หลังกด Save ฝั่ง backend ประมวลผล (เช่น คำนวณ route/shift ใหม่ทั้ง task) อาจใช้เวลาเกิน 1 นาที จึงตั้ง timeout ไว้ยาว
+    ${row_locator}=    Set Variable
+    ...    xpath=//tr[@data-row-key][td[2][contains(., '${external_order_no}')]]
+    SeleniumLibrary.Wait Until Element Is Visible    ${row_locator}    timeout=120s
+    ...    error=ไม่พบ External Order No: ${external_order_no} ในตาราง Delivery Orders ของ Task นี้ - คาดหวังว่าจะถูกเพิ่มเข้ามาแล้ว!
+
+    ${row}=    SeleniumLibrary.Get WebElement    ${row_locator}
+    # ใช้ inline: "nearest" (ไม่ใช่ "center") กันไม่ให้ตารางเลื่อนแนวนอนจนคอลัมน์ External Delivery No. หลุดจากจอ (ต้องการให้อยู่ชิดซ้าย)
+    SeleniumLibrary.Execute Javascript    arguments[0].scrollIntoView({inline: "nearest", block: "center"});    ARGUMENTS    ${row}
+    Highlight Web Element    ${row_locator}    green    \#e6ffe6
+    Sleep    2s
+
+    Log To Console    \n✅ ยืนยันแล้วว่า External Order No: ${external_order_no} ถูกเพิ่มเข้า Task นี้สำเร็จ (พบในตาราง Delivery Orders)

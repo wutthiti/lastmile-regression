@@ -1,0 +1,63 @@
+# ข้อมูล Test Data สำหรับ automate.robot (Delivery Order / Delivery Task)
+# แก้ไขค่าเหล่านี้ให้ตรงกับสถานะจริงในระบบ UAT ก่อนรันแต่ละครั้ง
+# หรือ override ผ่าน command line เช่น: robot --variable EXTERNAL_ORDER_NO_PENDING:xxxxxxxxxx automate.robot
+
+# ---------------------------------------------------------------------------
+# TC_REG_058 - External Delivery No. สถานะ Pending (cancel ควรสำเร็จ)
+# ---------------------------------------------------------------------------
+EXTERNAL_ORDER_NO_PENDING: "889992406STD002"
+
+# ---------------------------------------------------------------------------
+# TC_REG_059 - External Delivery No. สถานะ Planned (cancel ควรสำเร็จ)
+# ---------------------------------------------------------------------------
+EXTERNAL_ORDER_NO_PLANNED: "889992508OD092"
+
+# ---------------------------------------------------------------------------
+# TC_REG_060 - External Delivery No. สถานะ IN_LOAD (cancel ควรถูกปฏิเสธ)
+# ---------------------------------------------------------------------------
+EXTERNAL_ORDER_NO: "778880209OD002"
+
+# ---------------------------------------------------------------------------
+# TC_REG_061 - External Delivery No. สถานะ IN_TASK (cancel ควรถูกปฏิเสธ)
+# ---------------------------------------------------------------------------
+EXTERNAL_ORDER_NO_IN_TASK: "CHANGE_ME_IN_TASK_ORDER_NO"
+
+# ---------------------------------------------------------------------------
+# TC_REG_062-068 - External Delivery No. สถานะต่างๆ (cancel ควรถูกปฏิเสธเหมือน TC_REG_061)
+# ---------------------------------------------------------------------------
+EXTERNAL_ORDER_NO_DISPATCHED: "CHANGE_ME_DISPATCHED_ORDER_NO"
+EXTERNAL_ORDER_NO_IN_TRANSIT: "CHANGE_ME_IN_TRANSIT_ORDER_NO"
+EXTERNAL_ORDER_NO_DELIVERED: "CHANGE_ME_DELIVERED_ORDER_NO"
+EXTERNAL_ORDER_NO_CANCELLED: "CHANGE_ME_CANCELLED_ORDER_NO"
+EXTERNAL_ORDER_NO_FAILED: "CHANGE_ME_FAILED_ORDER_NO"
+EXTERNAL_ORDER_NO_TO_ATTEMPT: "CHANGE_ME_TO_ATTEMPT_ORDER_NO"
+EXTERNAL_ORDER_NO_RE_SCHEDULE: "CHANGE_ME_RE_SCHEDULE_ORDER_NO"
+
+# ---------------------------------------------------------------------------
+# TC_REG_069 - Task No. สถานะ Dispatched ที่คาดหวังว่าจะไม่มีปุ่ม Add Ad-hoc Order ปรากฏเลย
+# ---------------------------------------------------------------------------
+TASK_NO_DISPATCHED: "TK2609030002"
+
+# ---------------------------------------------------------------------------
+# TC_REG_080 - Task No. สถานะ Pending และ External Order No. สถานะ Pending ที่จะเพิ่มเข้าไปแบบ Ad-hoc
+# ---------------------------------------------------------------------------
+TASK_NO_PENDING: "TK2608240016"
+EXTERNAL_ORDER_NO_ADHOC_PENDING: "778880509STD001"
+
+# ---------------------------------------------------------------------------
+# TC_REG_081-087,089 - External Order No. สถานะต่างๆ (ไม่ใช่ Pending) ที่นำไปลองเพิ่มเข้า Task เดียวกัน (TASK_NO_PENDING)
+# คาดหวังผลเหมือน TC_REG_080 คือต้องขึ้น "No addable orders"
+# ---------------------------------------------------------------------------
+EXTERNAL_ORDER_NO_ADHOC_IN_LOAD: "CHANGE_ME_IN_LOAD_ORDER_NO"
+EXTERNAL_ORDER_NO_ADHOC_IN_TASK: "CHANGE_ME_IN_TASK_ORDER_NO"
+EXTERNAL_ORDER_NO_ADHOC_DISPATCHED: "CHANGE_ME_DISPATCHED_ORDER_NO"
+EXTERNAL_ORDER_NO_ADHOC_IN_TRANSIT: "CHANGE_ME_IN_TRANSIT_ORDER_NO"
+EXTERNAL_ORDER_NO_ADHOC_DELIVERED: "CHANGE_ME_DELIVERED_ORDER_NO"
+EXTERNAL_ORDER_NO_ADHOC_TO_ATTEMPT: "CHANGE_ME_TO_ATTEMPT_ORDER_NO"
+EXTERNAL_ORDER_NO_ADHOC_FAILED: "CHANGE_ME_FAILED_ORDER_NO"
+EXTERNAL_ORDER_NO_ADHOC_CANCELLED: "CHANGE_ME_CANCELLED_ORDER_NO"
+
+# ---------------------------------------------------------------------------
+# TC_REG_088 - External Order No. สถานะ RE_SCHEDULED ที่คาดหวังว่าจะเพิ่มเป็น Ad-hoc เข้า Task ได้สำเร็จ (ต่างจาก 081-087,089)
+# ---------------------------------------------------------------------------
+EXTERNAL_ORDER_NO_ADHOC_RE_SCHEDULE: "778882108STD022"

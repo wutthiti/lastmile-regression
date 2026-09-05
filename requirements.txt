@@ -1,0 +1,8 @@
+robotframework==7.4.1
+robotframework-appiumlibrary==3.2.1
+robotframework-seleniumlibrary==6.8.0
+robotframework-screencaplibrary==1.6.0
+robotframework-requests==0.9.7
+requests==2.34.2
+PyYAML==6.0.3
+python-dotenv==1.2.2
